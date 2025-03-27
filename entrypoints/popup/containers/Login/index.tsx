@@ -5,20 +5,29 @@ import { Input } from "../../components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "../../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { Plus, Import } from "lucide-react";
-import { toast } from "sonner";
+import { useToast } from "../../hooks/use-toast";
 
 export default function Login() {
     const [privateKey, setPrivateKey] = useState('');
     const [mnemonic, setMnemonic] = useState('');
     const navigate = useNavigate();
+    const { toast } = useToast();
 
     const handleImport = () => {
         if (!privateKey && !mnemonic) {
-            toast.error('Please enter your credentials');
+            toast({
+                variant: "error",
+                title: "Error",
+                description: "Please enter your credentials",
+            });
             return;
         }
         // TODO: Implement import logic
-        toast.success('Import successful');
+        toast({
+            variant: "success",
+            title: "Success",
+            description: "Import successful",
+        });
     };
 
     const handleCreateNewAccount = () => {

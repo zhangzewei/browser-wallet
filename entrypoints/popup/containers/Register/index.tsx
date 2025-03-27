@@ -4,72 +4,105 @@ import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "../../components/ui/card";
 import { ArrowLeft, Copy } from "lucide-react";
-import { toast } from "sonner";
+import { useToast } from "../../hooks/use-toast";
+import { generateMnemonic, english } from 'viem/accounts';
 
 export default function Register() {
     const navigate = useNavigate();
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [mnemonic, setMnemonic] = useState('');
+    const { toast } = useToast();
 
     const handleCreateAccount = () => {
         if (!password || !confirmPassword) {
-            toast.error('Please fill in all fields');
+            toast({
+                variant: "error",
+                title: "Error",
+                description: "Please fill in all fields",
+            });
             return;
         }
         if (password !== confirmPassword) {
-            toast.error('Passwords do not match');
+            toast({
+                variant: "error",
+                title: "Error",
+                description: "Passwords do not match",
+            });
             return;
         }
-        // TODO: Generate mnemonic using crypto library
-        const generatedMnemonic = "word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12";
-        setMnemonic(generatedMnemonic);
+        try {
+            // Generate a new mnemonic using viem
+            const newMnemonic = generateMnemonic(english);
+            console.log(newMnemonic);
+            setMnemonic(newMnemonic);
+
+            // TODO: Encrypt the mnemonic with the password
+            // TODO: Store the encrypted mnemonic securely
+
+            toast({
+                variant: "success",
+                title: "Account Created",
+                description: "Your mnemonic has been generated. Please save it securely!",
+            });
+        } catch (error) {
+            console.log(error);
+            toast({
+                variant: "error",
+                title: "Error",
+                description: "Failed to generate mnemonic. Please try again.",
+            });
+        }
     };
 
     const handleCopyMnemonic = () => {
         navigator.clipboard.writeText(mnemonic);
-        toast.success('Mnemonic copied to clipboard');
+        toast({
+            variant: "success",
+            title: "Success",
+            description: "Mnemonic copied to clipboard",
+        });
     };
 
     return (
-        <div className="p-4">
-            <Button
-                variant="outline"
-                onClick={() => navigate('/login')}
-                className="mb-4"
-            >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Login
-            </Button>
-
-            <Card>
+        <div className="p-4 h-screen flex flex-col">
+            <Card className="flex-1">
                 <CardHeader>
                     <CardTitle>Create New Account</CardTitle>
                 </CardHeader>
-                <CardContent>
-                    <div className="space-y-4">
-                        <Input
-                            type="password"
-                            placeholder="Enter password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full"
-                        />
-                        <Input
-                            type="password"
-                            placeholder="Confirm password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            className="w-full"
-                        />
-                        <Button
-                            onClick={handleCreateAccount}
-                            className="w-full"
-                        >
-                            Generate Account
-                        </Button>
-
-                        {mnemonic && (
+                <CardContent className="h-full flex flex-col">
+                    <div className="space-y-4 flex-1">
+                        {!mnemonic ? (
+                            <>
+                                <Input
+                                    type="password"
+                                    placeholder="Enter password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full"
+                                />
+                                <Input
+                                    type="password"
+                                    placeholder="Confirm password"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    className="w-full"
+                                />
+                                <Button
+                                    onClick={handleCreateAccount}
+                                    className="w-full"
+                                >
+                                    Generate Account
+                                </Button>
+                                <Button
+                                    onClick={() => navigate('/login')}
+                                    className="w-full"
+                                >
+                                    <ArrowLeft className="mr-2 h-4 w-4" />
+                                    Back to Login
+                                </Button>
+                            </>
+                        ) : (
                             <div className="mt-4">
                                 <div className="mb-2 font-medium">Your Mnemonic (Save this securely!):</div>
                                 <div className="bg-muted p-3 rounded-md break-words flex items-center justify-between">
