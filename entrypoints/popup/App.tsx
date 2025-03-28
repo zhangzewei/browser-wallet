@@ -3,6 +3,7 @@ import Login from './containers/Login';
 import Register from './containers/Register';
 import ImportAccount from './containers/Import';
 import Home from './containers/Home';
+import Networks from './containers/Networks';
 import { Toaster } from './components/ui/toaster';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/import" element={<ImportAccount />} />
           <Route path="/home" element={<Home />} />
+          <Route path="/networks" element={<Networks />} />
           {/* Add more routes here as needed */}
         </Routes>
         <Toaster />

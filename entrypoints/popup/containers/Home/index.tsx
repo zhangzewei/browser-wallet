@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from "../../components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "../../components/ui/card";
 import { Wallet, Send, Settings, ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
+import Sidebar from "../../components/Sidebar";
 
 interface Token {
     symbol: string;
@@ -13,6 +14,7 @@ interface Token {
 
 export default function Home() {
     const [isTokenListExpanded, setIsTokenListExpanded] = useState(true);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [tokens] = useState<Token[]>([
         {
             symbol: "ETH",
@@ -48,7 +50,7 @@ export default function Home() {
                         </div>
                         <span className="font-medium">My Wallet</span>
                     </div>
-                    <Button variant="ghost" size="icon">
+                    <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(true)}>
                         <Settings className="h-5 w-5" />
                     </Button>
                 </div>
@@ -144,6 +146,9 @@ export default function Home() {
                     </CardContent>
                 </Card>
             </div>
+
+            {/* Sidebar */}
+            <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
         </div>
     );
 } 
