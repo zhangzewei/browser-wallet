@@ -6,6 +6,7 @@ import ImportAccount from "./containers/Import";
 import Home from "./containers/Home";
 import Networks from "./containers/Networks";
 import Tokens from "./containers/Tokens";
+import SendTransaction from "./containers/SendTransaction";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/networks" element={<Networks />} />
           <Route path="/tokens" element={<Tokens />} />
+          <Route path="/send" element={<SendTransaction />} />
           {/* Add more routes here as needed */}
         </Routes>
         <Toaster />

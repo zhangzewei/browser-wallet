@@ -3,6 +3,7 @@ import { Button } from "../../components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "../../components/ui/card";
 import { Wallet, Send, Settings, ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
 import Sidebar from "../../components/Sidebar";
+import { useNavigate } from 'react-router-dom';
 
 interface Token {
     symbol: string;
@@ -38,6 +39,7 @@ export default function Home() {
             change24h: -1.2
         }
     ]);
+    const navigate = useNavigate();
 
     return (
         <div className="h-screen flex flex-col bg-gray-50">
@@ -69,8 +71,12 @@ export default function Home() {
 
                 {/* Quick Actions */}
                 <div className="grid grid-cols-2 gap-4">
-                    <Button variant="outline" className="h-20 flex flex-col gap-2">
-                        <Send className="h-6 w-6" />
+                    <Button
+                        variant="outline"
+                        className="h-20 flex flex-col gap-2"
+                        onClick={() => navigate('/send')}
+                    >
+                        <Send className="h-4 w-4" />
                         <span className="text-sm">Send</span>
                     </Button>
                     <Button variant="outline" className="h-20 flex flex-col gap-2">

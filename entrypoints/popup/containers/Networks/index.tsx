@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "../../components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "../../components/ui/card";
-import { ArrowLeft, Plus, Network, Globe, Link, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Network, Globe, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { mainnet, sepolia } from "viem/chains";
 import AddNetworkDialog from "../../components/AddNetworkDialog";
