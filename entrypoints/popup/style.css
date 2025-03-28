@@ -1,1 +1,139 @@
 @import 'tailwindcss';
+
+@theme {
+    /* 主色调：深邃蓝色 */
+    --color-blue-50: oklch(0.97 0.02 230);
+    --color-blue-100: oklch(0.94 0.03 230);
+    --color-blue-200: oklch(0.89 0.05 230);
+    --color-blue-300: oklch(0.84 0.07 230);
+    --color-blue-400: oklch(0.78 0.09 230);
+    --color-blue-500: oklch(0.72 0.11 230);
+    --color-blue-600: oklch(0.65 0.13 230);
+    --color-blue-700: oklch(0.58 0.15 230);
+    --color-blue-800: oklch(0.51 0.17 230);
+    --color-blue-900: oklch(0.44 0.19 230);
+
+    /* 中性色调 */
+    --color-gray-50: oklch(0.98 0.003 230);
+    --color-gray-100: oklch(0.95 0.003 230);
+    --color-gray-200: oklch(0.90 0.003 230);
+    --color-gray-300: oklch(0.85 0.003 230);
+    --color-gray-400: oklch(0.75 0.003 230);
+    --color-gray-500: oklch(0.65 0.003 230);
+    --color-gray-600: oklch(0.55 0.003 230);
+    --color-gray-700: oklch(0.45 0.003 230);
+    --color-gray-800: oklch(0.35 0.003 230);
+    --color-gray-900: oklch(0.25 0.003 230);
+    --color-gray-950: oklch(0.15 0.003 230);
+
+    /* 基础变量 */
+    --color-gray-hue: 178;
+    --radius-sm: 0.25rem;
+    --radius-md: 0.375rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
+    --radius-2xl: 1rem;
+
+    /* 主题变量 */
+    --background: oklch(0.98 0.003 230);
+    --foreground: oklch(0.25 0.003 230);
+
+    --card: oklch(0.98 0.003 230);
+    --card-foreground: oklch(0.25 0.003 230);
+
+    --popover: oklch(0.98 0.003 230);
+    --popover-foreground: oklch(0.25 0.003 230);
+
+    --blue: oklch(0.72 0.11 230);
+    --blue-foreground: oklch(0.98 0.003 230);
+
+    --gray: oklch(0.95 0.003 230);
+    --gray-foreground: oklch(0.25 0.003 230);
+
+    --muted: oklch(0.95 0.003 230);
+    --muted-foreground: oklch(0.65 0.003 230);
+
+    --accent: oklch(0.94 0.03 230);
+    --accent-foreground: oklch(0.44 0.19 230);
+
+    --red: oklch(0.7 0.2 30);
+    --red-foreground: oklch(0.98 0.003 230);
+
+    --border: oklch(0.90 0.003 230);
+    --input: oklch(0.90 0.003 230);
+    --ring: oklch(0.72 0.11 230);
+
+    --radius: var(--radius-md);
+}
+
+/* 添加具体的颜色类 */
+@layer base {
+    .bg-blue {
+        background-color: var(--blue);
+    }
+
+    .text-blue {
+        color: var(--blue);
+    }
+
+    .text-blue-foreground {
+        color: var(--blue-foreground);
+    }
+
+    .bg-red {
+        background-color: var(--red);
+    }
+
+    .text-red {
+        color: var(--red);
+    }
+
+    .text-red-foreground {
+        color: var(--red-foreground);
+    }
+
+    .bg-gray {
+        background-color: var(--gray);
+    }
+
+    .text-gray {
+        color: var(--gray);
+    }
+
+    .text-gray-foreground {
+        color: var(--gray-foreground);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    @theme {
+        /* 深色模式主题变量 */
+        --background: oklch(0.15 0.003 230);
+        --foreground: oklch(0.98 0.003 230);
+
+        --card: oklch(0.25 0.003 230);
+        --card-foreground: oklch(0.98 0.003 230);
+
+        --popover: oklch(0.25 0.003 230);
+        --popover-foreground: oklch(0.98 0.003 230);
+
+        --blue: oklch(0.78 0.09 230);
+        --blue-foreground: oklch(0.25 0.003 230);
+
+        --gray: oklch(0.35 0.003 230);
+        --gray-foreground: oklch(0.98 0.003 230);
+
+        --muted: oklch(0.35 0.003 230);
+        --muted-foreground: oklch(0.75 0.003 230);
+
+        --accent: oklch(0.44 0.19 230);
+        --accent-foreground: oklch(0.94 0.03 230);
+
+        --red: oklch(0.5 0.2 30);
+        --red-foreground: oklch(0.98 0.003 230);
+
+        --border: oklch(0.35 0.003 230);
+        --input: oklch(0.35 0.003 230);
+        --ring: oklch(0.78 0.09 230);
+    }
+}

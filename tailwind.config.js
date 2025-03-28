@@ -1,11 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     content: [
-        "./entrypoints/**/*.{html,js,jsx}",
-        // 若有其他文件类型需要扫描，可在此添加
+        "./index.html",
+        "./entrypoints/**/*.{js,ts,jsx,tsx,html}"
     ],
-    theme: {
-        extend: {},
-    },
-    plugins: [],
+    plugins: [require("tailwindcss-animate")],
 }  

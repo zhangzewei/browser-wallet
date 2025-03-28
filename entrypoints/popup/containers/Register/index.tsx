@@ -115,7 +115,7 @@ export default function Register() {
                                         <Copy className="h-4 w-4" />
                                     </Button>
                                 </div>
-                                <div className="mt-2 text-sm text-destructive">
+                                <div className="mt-2 text-sm text-red">
                                     ⚠️ Warning: Never share your mnemonic with anyone!
                                 </div>
                                 <Button
