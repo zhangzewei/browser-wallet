@@ -4,6 +4,7 @@ import Register from './containers/Register';
 import ImportAccount from './containers/Import';
 import Home from './containers/Home';
 import Networks from './containers/Networks';
+import Tokens from './containers/Tokens';
 import { Toaster } from './components/ui/toaster';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
           <Route path="/import" element={<ImportAccount />} />
           <Route path="/home" element={<Home />} />
           <Route path="/networks" element={<Networks />} />
+          <Route path="/tokens" element={<Tokens />} />
           {/* Add more routes here as needed */}
         </Routes>
         <Toaster />
