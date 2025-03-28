@@ -26,8 +26,11 @@ export default function ImportAccount() {
         toast({
             variant: "success",
             title: "Success",
-            description: "Import successful",
+            description: "Account imported successfully",
         });
+
+        // Navigate to home page after successful import
+        navigate('/home');
     };
 
     return (
@@ -44,7 +47,7 @@ export default function ImportAccount() {
                         Import your existing wallet
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="flex flex-col">
+                <CardContent className="h-full flex flex-col">
                     <div className="space-y-4 flex-1">
                         <Tabs defaultValue="privateKey" className="w-full">
                             <TabsList className="grid w-full grid-cols-2">
@@ -83,6 +86,7 @@ export default function ImportAccount() {
                             className="w-full h-12 text-lg"
                             variant="default"
                         >
+                            <Import className="mr-2 h-5 w-5" />
                             Import Account
                         </Button>
                         <Button

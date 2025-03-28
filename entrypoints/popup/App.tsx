@@ -2,6 +2,7 @@ import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './containers/Login';
 import Register from './containers/Register';
 import ImportAccount from './containers/Import';
+import Home from './containers/Home';
 import { Toaster } from './components/ui/toaster';
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/import" element={<ImportAccount />} />
+          <Route path="/home" element={<Home />} />
           {/* Add more routes here as needed */}
         </Routes>
         <Toaster />

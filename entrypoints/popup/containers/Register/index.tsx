@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "../../components/ui/card";
-import { ArrowLeft, Key, Copy, Check } from "lucide-react";
+import { ArrowLeft, Key, Copy, Check, Home } from "lucide-react";
 import { useToast } from "../../hooks/use-toast";
 import { generateMnemonic, english } from 'viem/accounts';
 
@@ -81,7 +81,7 @@ export default function Register() {
                         Set up your secure wallet
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="flex flex-col">
+                <CardContent className="h-full flex flex-col">
                     <div className="space-y-4 flex-1">
                         <div className="space-y-2">
                             <label className="text-sm font-medium">Password</label>
@@ -132,21 +132,34 @@ export default function Register() {
                             </div>
                         )}
 
-                        <Button
-                            onClick={handleCreateAccount}
-                            className="w-full h-12 text-lg"
-                            variant="default"
-                        >
-                            Create Account
-                        </Button>
-                        <Button
-                            onClick={() => navigate('/login')}
-                            className="w-full h-12 text-lg"
-                            variant="outline"
-                        >
-                            <ArrowLeft className="mr-2 h-5 w-5" />
-                            Back to Login
-                        </Button>
+                        {!mnemonic ? (
+                            <>
+                                <Button
+                                    onClick={handleCreateAccount}
+                                    className="w-full h-12 text-lg"
+                                    variant="default"
+                                >
+                                    Create Account
+                                </Button>
+                                <Button
+                                    onClick={() => navigate('/login')}
+                                    className="w-full h-12 text-lg"
+                                    variant="outline"
+                                >
+                                    <ArrowLeft className="mr-2 h-5 w-5" />
+                                    Back to Login
+                                </Button>
+                            </>
+                        ) : (
+                            <Button
+                                onClick={() => navigate('/home')}
+                                className="w-full h-12 text-lg"
+                                variant="default"
+                            >
+                                <Home className="mr-2 h-5 w-5" />
+                                Go to Home
+                            </Button>
+                        )}
                     </div>
                 </CardContent>
             </Card>
