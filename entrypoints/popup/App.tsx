@@ -1,11 +1,11 @@
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './containers/Login';
-import Register from './containers/Register';
-import ImportAccount from './containers/Import';
-import Home from './containers/Home';
-import Networks from './containers/Networks';
-import Tokens from './containers/Tokens';
-import { Toaster } from './components/ui/toaster';
+import { Toaster } from "./components/ui/toaster";
+import Login from "./containers/Login";
+import Register from "./containers/Register";
+import ImportAccount from "./containers/Import";
+import Home from "./containers/Home";
+import Networks from "./containers/Networks";
+import Tokens from "./containers/Tokens";
 
 function App() {
   return (
