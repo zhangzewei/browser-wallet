@@ -34,6 +34,12 @@ export default defineConfig({
         js: ['content-scripts/content.js'],
         run_at: 'document_start'
       }
+    ],
+    web_accessible_resources: [
+      {
+        resources: ['injected.js'],
+        matches: ['<all_urls>']
+      }
     ]
   }
 });

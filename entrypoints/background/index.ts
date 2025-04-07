@@ -1,80 +1,71 @@
 import { defineBackground } from 'wxt/sandbox';
+import { MESSAGE_PREFIX, MessageType } from '../../constants';
 
-interface WalletState {
-    isConnected: boolean;
-    accounts: string[];
-    chainId: string;
+// 处理 RPC 请求
+async function handleRpcRequest(request: any) {
+    try {
+        // 根据请求的方法执行相应的操作
+        switch (request.method) {
+            case 'eth_accounts':
+                return ['0x0000000000000000000000000000000000000000'];
+
+            case 'eth_chainId':
+                return '0x1'; // Ethereum Mainnet
+
+            case 'net_version':
+                return '1'; // Ethereum Mainnet
+
+            case 'eth_requestAccounts':
+                // 这里应该触发钱包 UI 来请求用户授权
+                // 现在我们简单返回一个固定地址
+                return ['0x0000000000000000000000000000000000000000'];
+
+            default:
+                throw new Error(`Method not supported: ${request.method}`);
+        }
+    } catch (error) {
+        console.error('RPC request error:', error);
+        throw error;
+    }
 }
 
 export default defineBackground({
     main() {
-        let state: WalletState = {
-            isConnected: false,
-            accounts: [],
-            chainId: '0x1' // Default to Ethereum mainnet
-        };
-
-        // Handle messages from content script
+        // 监听来自 content script 的消息
         chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-            if (message.type !== 'wallet_request') {
-                return;
-            }
+            // 检查消息是否来自我们的 content script
+            if (
+                message &&
+                typeof message === 'object' &&
+                message.type === `${MESSAGE_PREFIX}${MessageType.REQUEST}`
+            ) {
+                const request = message.payload;
 
-            handleWalletRequest(message, sender, sendResponse, state);
-            return true; // Keep the message channel open for async response
-        });
-    }
-});
-
-async function handleWalletRequest(
-    message: { method: string; params: any[] },
-    sender: chrome.runtime.MessageSender,
-    sendResponse: (response: any) => void,
-    state: WalletState
-) {
-    try {
-        switch (message.method) {
-            case 'eth_requestAccounts':
-            case 'eth_accounts':
-                if (!state.isConnected) {
-                    // Show popup for connection approval
-                    const popup = await chrome.windows.create({
-                        url: 'popup.html#/connect',
-                        type: 'popup',
-                        width: 360,
-                        height: 600
+                // 处理 RPC 请求
+                handleRpcRequest(request)
+                    .then(result => {
+                        // 发送成功响应
+                        sendResponse({
+                            id: request.id,
+                            jsonrpc: request.jsonrpc,
+                            result
+                        });
+                    })
+                    .catch(error => {
+                        // 发送错误响应
+                        sendResponse({
+                            id: request.id,
+                            jsonrpc: request.jsonrpc,
+                            error: {
+                                code: -32603, // Internal error
+                                message: error.message || 'Internal error'
+                            }
+                        });
                     });
 
-                    // Wait for user approval
-                    // This is simplified - you'll need to implement proper communication
-                    // between popup and background
-                    state.isConnected = true;
-                    state.accounts = ['0x1234567890123456789012345678901234567890']; // Example account
-                }
-                sendResponse({ result: state.accounts });
-                break;
-
-            case 'eth_chainId':
-                sendResponse({ result: state.chainId });
-                break;
-
-            case 'eth_sendTransaction':
-                // Show popup for transaction approval
-                const txPopup = await chrome.windows.create({
-                    url: `popup.html#/send?tx=${encodeURIComponent(JSON.stringify(message.params[0]))}`,
-                    type: 'popup',
-                    width: 360,
-                    height: 600
-                });
-                // The actual transaction handling will be done in the popup
-                // This is just a placeholder response
-                sendResponse({ result: '0x...' }); // Transaction hash
-                break;
-
-            default:
-                sendResponse({ error: `Method ${message.method} not supported` });
-        }
-    } catch (error) {
-        sendResponse({ error: error instanceof Error ? error.message : 'Unknown error' });
-    }
-} 
+                // 返回 true 表示我们将异步发送响应
+                return true;
+            }
+        });
+    },
+}); 
