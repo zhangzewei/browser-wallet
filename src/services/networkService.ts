@@ -1,11 +1,14 @@
 import { Chain, mainnet, sepolia } from 'viem/chains';
 
+type NetworkChangeCallback = (network: Chain | undefined) => void;
+
 class NetworkService {
     private static instance: NetworkService;
     private networks: Chain[] = [];
     private currentNetwork: Chain | undefined;
     private readonly STORAGE_KEY = 'wallet_networks';
     private readonly CURRENT_NETWORK_KEY = 'wallet_current_network';
+    private changeCallbacks: NetworkChangeCallback[] = [];
 
     // 受保护的默认网络 chainId 列表
     private static readonly PROTECTED_NETWORK_CHAIN_IDS: number[] = [mainnet.id, sepolia.id];
@@ -120,7 +123,7 @@ class NetworkService {
     }
 
     public getNetworks(): Chain[] {
-        return [...this.networks];
+        return this.networks;
     }
 
     public getNetwork(chainId: number): Chain | undefined {
@@ -144,12 +147,25 @@ class NetworkService {
             this.currentNetwork = network;
         }
         await this.saveCurrentNetwork();
+        this.notifyNetworkChange(this.currentNetwork);
     }
 
     public async clearNetworks(): Promise<void> {
         // 只保留受保护的默认网络
         this.networks = this.networks.filter(n => NetworkService.PROTECTED_NETWORK_CHAIN_IDS.includes(n.id));
         await this.saveNetworks();
+    }
+
+    public onNetworkChange(callback: NetworkChangeCallback): void {
+        this.changeCallbacks.push(callback);
+    }
+
+    public removeNetworkChangeListener(callback: NetworkChangeCallback): void {
+        this.changeCallbacks = this.changeCallbacks.filter(cb => cb !== callback);
+    }
+
+    private notifyNetworkChange(network: Chain | undefined): void {
+        this.changeCallbacks.forEach(callback => callback(network));
     }
 }
 

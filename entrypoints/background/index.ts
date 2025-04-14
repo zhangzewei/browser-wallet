@@ -2,10 +2,13 @@ import { defineBackground } from 'wxt/sandbox';
 import { MESSAGE_PREFIX, MessageType } from '../../constants';
 import AccountService from '../../src/services/accountService';
 import NetworkService from '../../src/services/networkService';
+import WalletClientService from '../../src/services/walletClient';
+import { toHex } from 'viem';
 
 // Initialize services
 const accountService = AccountService.getInstance();
 const networkService = NetworkService.getInstance();
+const walletClientService = WalletClientService.getInstance();
 
 // 处理 RPC 请求
 async function handleRpcRequest(request: any) {
@@ -27,7 +30,7 @@ async function handleRpcRequest(request: any) {
                 if (!currentNetwork) {
                     throw new Error('No current network found');
                 }
-                return `0x${currentNetwork.id.toString(16)}`;
+                return toHex(currentNetwork.id);
 
             case 'net_version':
                 // 返回当前网络的 chainId
@@ -35,29 +38,51 @@ async function handleRpcRequest(request: any) {
                 if (!network) {
                     throw new Error('No current network found');
                 }
-                return network.id.toString();
-
-            case 'eth_getBalance':
-                // TODO: 实现获取余额的逻辑
-                return '0x0';
-
-            case 'eth_sendTransaction':
-                // TODO: 实现发送交易的逻辑
-                throw new Error('Transaction sending not implemented yet');
-
-            case 'eth_sign':
-                // TODO: 实现签名逻辑
-                throw new Error('Signing not implemented yet');
-
-            case 'personal_sign':
-                // TODO: 实现 personal_sign 逻辑
-                throw new Error('Personal signing not implemented yet');
+                return toHex(network.id);
 
             default:
-                throw new Error(`Method not supported: ${request.method}`);
+                // 使用 walletClient 处理其他 RPC 请求
+                return await rpcRequest(request);
         }
     } catch (error) {
         console.error('RPC request error:', error);
+        throw error;
+    }
+}
+
+// 通用的 RPC 请求处理函数
+async function rpcRequest(request: any) {
+    const { method, params } = request;
+
+    // 检查是否是只读操作
+    const isReadOnly = [
+        'eth_getBalance',
+        'eth_getTransactionCount',
+        'eth_getBlockByNumber',
+        'eth_getBlockByHash',
+        'eth_getTransactionByHash',
+        'eth_getTransactionReceipt',
+        'eth_call',
+        'eth_estimateGas',
+        'eth_getLogs'
+    ].includes(method);
+
+    try {
+        if (isReadOnly) {
+            // 使用 publicClient 处理只读操作
+            return await walletClientService.getPublicClient().request({
+                method,
+                params
+            });
+        } else {
+            // 使用 walletClient 处理需要签名的操作
+            return await walletClientService.getWalletClient().request({
+                method,
+                params
+            });
+        }
+    } catch (error) {
+        console.error(`RPC request failed: ${method}`, error);
         throw error;
     }
 }

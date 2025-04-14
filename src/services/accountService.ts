@@ -1,11 +1,14 @@
 import { Account } from '../types/account';
 
+type AccountChangeCallback = (account: Account | undefined) => void;
+
 class AccountService {
     private static instance: AccountService;
     private accounts: Account[] = [];
     private readonly STORAGE_KEY = 'wallet_accounts';
     private readonly CURRENT_ACCOUNT_KEY = 'wallet_current_account';
     private currentAccountAddress: string | undefined;
+    private changeCallbacks: AccountChangeCallback[] = [];
 
     private constructor() {
         this.loadAccounts();
@@ -89,6 +92,7 @@ class AccountService {
         }
         this.currentAccountAddress = address;
         await this.saveCurrentAccount();
+        this.notifyAccountChange(account);
     }
 
     public async clearAccounts(): Promise<void> {
@@ -96,6 +100,19 @@ class AccountService {
         this.currentAccountAddress = undefined;
         await this.saveAccounts();
         await this.saveCurrentAccount();
+        this.notifyAccountChange(undefined);
+    }
+
+    public onAccountChange(callback: AccountChangeCallback): void {
+        this.changeCallbacks.push(callback);
+    }
+
+    public removeAccountChangeListener(callback: AccountChangeCallback): void {
+        this.changeCallbacks = this.changeCallbacks.filter(cb => cb !== callback);
+    }
+
+    private notifyAccountChange(account: Account | undefined): void {
+        this.changeCallbacks.forEach(callback => callback(account));
     }
 }
 
