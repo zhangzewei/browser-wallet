@@ -4,6 +4,8 @@ class AccountService {
     private static instance: AccountService;
     private accounts: Account[] = [];
     private readonly STORAGE_KEY = 'wallet_accounts';
+    private readonly CURRENT_ACCOUNT_KEY = 'wallet_current_account';
+    private currentAccountAddress: string | undefined;
 
     private constructor() {
         this.loadAccounts();
@@ -18,8 +20,9 @@ class AccountService {
 
     private async loadAccounts(): Promise<void> {
         try {
-            const result = await chrome.storage.local.get(this.STORAGE_KEY);
+            const result = await chrome.storage.local.get([this.STORAGE_KEY, this.CURRENT_ACCOUNT_KEY]);
             this.accounts = result[this.STORAGE_KEY] || [];
+            this.currentAccountAddress = result[this.CURRENT_ACCOUNT_KEY];
         } catch (error) {
             console.error('Failed to load accounts:', error);
             this.accounts = [];
@@ -31,6 +34,14 @@ class AccountService {
             await chrome.storage.local.set({ [this.STORAGE_KEY]: this.accounts });
         } catch (error) {
             console.error('Failed to save accounts:', error);
+        }
+    }
+
+    private async saveCurrentAccount(): Promise<void> {
+        try {
+            await chrome.storage.local.set({ [this.CURRENT_ACCOUNT_KEY]: this.currentAccountAddress });
+        } catch (error) {
+            console.error('Failed to save current account:', error);
         }
     }
 
@@ -57,16 +68,34 @@ class AccountService {
     }
 
     public getAccounts(): Account[] {
-        return [...this.accounts];
+        return this.accounts;
     }
 
     public getAccount(address: string): Account | undefined {
         return this.accounts.find(acc => acc.address === address);
     }
 
+    public getCurrentAccount(): Account | undefined {
+        if (!this.currentAccountAddress) {
+            return undefined;
+        }
+        return this.accounts.find(acc => acc.address === this.currentAccountAddress);
+    }
+
+    public async setCurrentAccount(address: string): Promise<void> {
+        const account = this.accounts.find(acc => acc.address === address);
+        if (!account) {
+            throw new Error('Account not found');
+        }
+        this.currentAccountAddress = address;
+        await this.saveCurrentAccount();
+    }
+
     public async clearAccounts(): Promise<void> {
         this.accounts = [];
+        this.currentAccountAddress = undefined;
         await this.saveAccounts();
+        await this.saveCurrentAccount();
     }
 }
 

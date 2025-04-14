@@ -76,9 +76,9 @@ class PageProvider {
 export default defineUnlistedScript(() => {
     const info = {
         uuid: uuidv4(),
-        name: WALLET_INFO.NAME,
+        name: WALLET_INFO.name,
         icon: Icon,
-        rdns: WALLET_INFO.RDNS,
+        rdns: WALLET_INFO.name,
     };
 
     const injectedProvider = new Proxy(new PageProvider(), {
