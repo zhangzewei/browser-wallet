@@ -5,6 +5,7 @@ export const MESSAGE_PREFIX = 'BROWSER_WALLET_';
 export enum MessageType {
     REQUEST = 'REQUEST',
     RESPONSE = 'RESPONSE',
+    ACCOUNT_MANAGEMENT = "ACCOUNT_MANAGEMENT",
 }
 
 // 钱包信息

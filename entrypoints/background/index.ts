@@ -1,5 +1,9 @@
 import { defineBackground } from 'wxt/sandbox';
 import { MESSAGE_PREFIX, MessageType } from '../../constants';
+import AccountService from '../../src/services/accountService';
+
+// Initialize account service
+const accountService = AccountService.getInstance();
 
 // 处理 RPC 请求
 async function handleRpcRequest(request: any) {
@@ -26,6 +30,33 @@ async function handleRpcRequest(request: any) {
     } catch (error) {
         console.error('RPC request error:', error);
         throw error;
+    }
+}
+
+// 处理账户管理请求
+async function handleAccountManagement(action: string, payload: any) {
+    try {
+        switch (action) {
+            case 'addAccount':
+                await accountService.addAccount(payload);
+                return { success: true };
+            case 'removeAccount':
+                await accountService.removeAccount(payload.address);
+                return { success: true };
+            case 'updateAccount':
+                await accountService.updateAccount(payload);
+                return { success: true };
+            case 'getAccounts':
+                return { success: true, data: accountService.getAccounts() };
+            case 'getAccount':
+                const account = accountService.getAccount(payload.address);
+                return { success: true, data: account };
+            default:
+                return { success: false, error: 'Unknown action' };
+        }
+    } catch (error) {
+        console.error('Account management error:', error);
+        return { success: false, error: (error as Error).message };
     }
 }
 
@@ -65,6 +96,14 @@ export default defineBackground({
 
                 // 返回 true 表示我们将异步发送响应
                 return true;
+            }
+
+            // 处理账户管理请求
+            if (message.type === MessageType.ACCOUNT_MANAGEMENT) {
+                const { action, payload } = message;
+                handleAccountManagement(action, payload)
+                    .then(response => sendResponse(response));
+                return true; // Keep the message channel open for async response
             }
         });
     },

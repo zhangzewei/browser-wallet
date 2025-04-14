@@ -26,8 +26,6 @@ export interface ContentMessage {
 }
 
 export class ContentProvider {
-    private requestIdCounter = 0;
-    private pendingRequests = new Map<number | string, (response: JsonRpcResponse) => void>();
 
     constructor() {
         // 监听来自页面的消息
@@ -79,41 +77,6 @@ export class ContentProvider {
             return true; // 保持消息通道打开以进行异步响应
         }
         return false;
-    };
-
-    // 提供给页面脚本使用的请求方法
-    public request = async (method: string, params?: any[]): Promise<any> => {
-        const id = this.requestIdCounter++;
-        const request: JsonRpcRequest = {
-            id,
-            jsonrpc: '2.0',
-            method,
-            params
-        };
-
-        return new Promise((resolve, reject) => {
-            // 存储回调
-            this.pendingRequests.set(id, (response) => {
-                if (response.error) {
-                    reject(new Error(response.error.message));
-                } else {
-                    resolve(response.result);
-                }
-            });
-
-            // 发送请求到扩展
-            chrome.runtime.sendMessage(
-                { type: `${MESSAGE_PREFIX}${MessageType.REQUEST}`, payload: request },
-                (response: JsonRpcResponse) => {
-                    // 处理响应
-                    const callback = this.pendingRequests.get(response.id);
-                    if (callback) {
-                        callback(response);
-                        this.pendingRequests.delete(response.id);
-                    }
-                }
-            );
-        });
     };
 
     // 清理方法

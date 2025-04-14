@@ -1,6 +1,7 @@
 import { defineUnlistedScript } from 'wxt/sandbox';
 import { MESSAGE_PREFIX, MessageType, WALLET_INFO } from '../../constants';
 import { v4 as uuidv4 } from 'uuid';
+import Icon from '../../public/assets/icon-128.png';
 class PageProvider {
     private requestIdCounter = 0;
     private pendingRequests = new Map<number | string, (response: any) => void>();
@@ -76,7 +77,7 @@ export default defineUnlistedScript(() => {
     const info = {
         uuid: uuidv4(),
         name: WALLET_INFO.NAME,
-        icon: '',
+        icon: Icon,
         rdns: WALLET_INFO.RDNS,
     };
 
