@@ -48,12 +48,14 @@ class AccountService {
         }
     }
 
-    public async addAccount(account: Account): Promise<void> {
-        if (this.accounts.some(acc => acc.address === account.address)) {
+    public async addAccount(account: Account): Promise<Account> {
+        if (this.accounts.length > 0 && this.accounts.some(acc => acc.address === account.address)) {
             throw new Error('Account already exists');
         }
         this.accounts.push(account);
         await this.saveAccounts();
+        await this.setCurrentAccount(account.address);
+        return account;
     }
 
     public async removeAccount(address: string): Promise<void> {
@@ -79,6 +81,7 @@ class AccountService {
     }
 
     public getCurrentAccount(): Account | undefined {
+        console.log(this);
         if (!this.currentAccountAddress) {
             return undefined;
         }

@@ -5,9 +5,10 @@ import { Input } from "../../components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "../../components/ui/card";
 import { ArrowLeft, Key, Copy, Check, Home } from "lucide-react";
 import { useToast } from "../../hooks/use-toast";
-import { generateMnemonic, english } from 'viem/accounts';
-
+import { generateMnemonic, english, mnemonicToAccount } from 'viem/accounts';
+import { useWallet } from '../../contexts/wallet';
 export default function Register() {
+    const { wallet, refresh } = useWallet();
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [mnemonic, setMnemonic] = useState('');
@@ -15,7 +16,7 @@ export default function Register() {
     const navigate = useNavigate();
     const { toast } = useToast();
 
-    const handleCreateAccount = () => {
+    const handleCreateAccount = async () => {
         if (!password || !confirmPassword) {
             toast({
                 variant: "error",
@@ -35,11 +36,16 @@ export default function Register() {
         try {
             // Generate a new mnemonic using viem
             const newMnemonic = generateMnemonic(english);
-            console.log(newMnemonic);
             setMnemonic(newMnemonic);
 
-            // TODO: Encrypt the mnemonic with the password
-            // TODO: Store the encrypted mnemonic securely
+            const account = mnemonicToAccount(newMnemonic);
+
+            await wallet.addAccount({
+                address: account.address,
+                mnemonic: newMnemonic,
+            });
+
+            await refresh();
 
             toast({
                 variant: "success",
@@ -81,7 +87,7 @@ export default function Register() {
                         Set up your secure wallet
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="h-full flex flex-col">
+                <CardContent className="flex flex-col">
                     <div className="space-y-4 flex-1">
                         <div className="space-y-2">
                             <label className="text-sm font-medium">Password</label>

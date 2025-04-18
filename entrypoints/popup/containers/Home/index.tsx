@@ -4,6 +4,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "../../components/ui/ca
 import { Wallet, Send, Settings, ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
 import Sidebar from "../../components/Sidebar";
 import { useNavigate } from 'react-router-dom';
+import { useWallet } from "../../contexts/wallet";
+import { shortenAddress } from '../../lib/utils';
 
 interface Token {
     symbol: string;
@@ -14,6 +16,10 @@ interface Token {
 }
 
 export default function Home() {
+    const navigate = useNavigate();
+    const { state } = useWallet();
+    const { currentAccount } = state;
+
     const [isTokenListExpanded, setIsTokenListExpanded] = useState(true);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [tokens] = useState<Token[]>([
@@ -39,7 +45,6 @@ export default function Home() {
             change24h: -1.2
         }
     ]);
-    const navigate = useNavigate();
 
     return (
         <div className="h-screen flex flex-col bg-gray-50">
@@ -50,7 +55,7 @@ export default function Home() {
                         <div className="p-2 rounded-full bg-blue-100">
                             <Wallet className="h-5 w-5 text-blue-600" />
                         </div>
-                        <span className="font-medium">My Wallet</span>
+                        <span className="font-medium">My Wallet: {currentAccount?.address ? shortenAddress(currentAccount.address) : ''}</span>
                     </div>
                     <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(true)}>
                         <Settings className="h-5 w-5" />
@@ -79,7 +84,11 @@ export default function Home() {
                         <Send className="h-4 w-4" />
                         <span className="text-sm">Send</span>
                     </Button>
-                    <Button variant="outline" className="h-20 flex flex-col gap-2">
+                    <Button
+                        variant="outline"
+                        className="h-20 flex flex-col gap-2"
+                        onClick={() => navigate('/receive')}
+                    >
                         <Wallet className="h-6 w-6" />
                         <span className="text-sm">Receive</span>
                     </Button>

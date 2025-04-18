@@ -2,10 +2,14 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from "../../components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "../../components/ui/card";
 import { Import, Plus, Wallet } from "lucide-react";
-
+import { useWallet } from '../../contexts/wallet';
 export default function Login() {
     const navigate = useNavigate();
-
+    const { state } = useWallet();
+    const { currentAccount } = state;
+    if (currentAccount) {
+        navigate('/home');
+    }
     return (
         <div className="p-4 h-screen flex flex-col bg-blue-50">
             <Card className="flex-1">

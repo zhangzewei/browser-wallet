@@ -4,6 +4,7 @@ import AccountService from '../../src/services/accountService';
 import NetworkService from '../../src/services/networkService';
 import WalletClientService from '../../src/services/walletClient';
 import { toHex } from 'viem';
+import WalletController from "../../src/services/walletController";
 
 // Initialize services
 const accountService = AccountService.getInstance();
@@ -90,10 +91,11 @@ async function rpcRequest(request: any) {
 // 处理账户管理请求
 async function handleAccountManagement(action: string, payload: any) {
     try {
+        console.log(action, payload);
         switch (action) {
             case 'addAccount':
-                await accountService.addAccount(payload);
-                return { success: true };
+                const newAccount = await accountService.addAccount(payload);
+                return { success: true, data: newAccount };
             case 'removeAccount':
                 await accountService.removeAccount(payload.address);
                 return { success: true };
@@ -105,6 +107,9 @@ async function handleAccountManagement(action: string, payload: any) {
             case 'getAccount':
                 const account = accountService.getAccount(payload.address);
                 return { success: true, data: account };
+            case 'getCurrentAccount':
+                const currentAccount = accountService.getCurrentAccount();
+                return { success: true, data: currentAccount };
             default:
                 return { success: false, error: 'Unknown action' };
         }
@@ -147,6 +152,22 @@ async function handleNetworkManagement(action: string, payload: any) {
     }
 }
 
+async function handleUIRequest(request: { method: string; params: unknown[] }) {
+    const { method, params } = request;
+    const walletController = WalletController.getInstance();
+
+    if (typeof walletController[method as keyof WalletController] === 'function') {
+        try {
+            const result = await (walletController[method as keyof WalletController] as (...args: unknown[]) => unknown)(...params);
+            return { success: true, data: result };
+        } catch (error) {
+            return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+        }
+    }
+
+    return { success: false, error: `Method ${method} not found on WalletController` };
+}
+
 export default defineBackground({
     main() {
         // 监听来自 content script 的消息
@@ -158,7 +179,7 @@ export default defineBackground({
                 message.type === `${MESSAGE_PREFIX}${MessageType.REQUEST}`
             ) {
                 const request = message.payload;
-
+                console.log('onMessage', message, sender, sendResponse);
                 // 处理 RPC 请求
                 handleRpcRequest(request)
                     .then(result => {
@@ -199,6 +220,13 @@ export default defineBackground({
                 handleNetworkManagement(action, payload)
                     .then(response => sendResponse(response));
                 return true; // Keep the message channel open for async response
+            }
+
+            if (message.type === MessageType.UI_REQUEST) {
+                handleUIRequest(message.payload)
+                    .then(sendResponse)
+                    .catch(error => sendResponse({ success: false, error: error.message }));
+                return true; // 保持消息通道开放以支持异步响应
             }
         });
     },
